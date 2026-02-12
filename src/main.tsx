@@ -1,5 +1,19 @@
-import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { HashRouter } from "react-router-dom";
+import App from "./App";
 import "./index.css";
 
-createRoot(document.getElementById("root")!).render(<App />);
+/*
+  Acá uso HashRouter para que GitHub Pages no rompa las rutas.
+  Ejemplo:
+  - /#/coworking funciona siempre
+  - refrescar no da 404
+*/
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <HashRouter>
+      <App />
+    </HashRouter>
+  </React.StrictMode>
+);

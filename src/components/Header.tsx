@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import logoSalinas from "@/assets/fotos/logo.salinas.png";
 
 const navLinks = [
-  { label: "Inicio", href: "/#inicio", route: false },
-  { label: "Área Jurídica", href: "/#juridica", route: false },
+  { label: "Inicio", href: "#inicio", route: false },
+  { label: "Área Jurídica", href: "#juridica", route: false },
   { label: "Coworking", href: "/coworking", route: true },
-  { label: "Contacto", href: "/#contacto", route: false },
+  { label: "Contacto", href: "#contacto", route: false },
 ];
+
 
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
