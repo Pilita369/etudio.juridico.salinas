@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logoSalinas from "@/assets/fotos/logo.salinas.png";
-import { useScrollToSection } from "@/hooks/useScrollToSection";
 import { Menu, X } from "lucide-react";
+import { useScrollToSection } from "@/hooks/useScrollToSection";
 
 /*
-  ✅ Acá defino el menú.
-  - route=true: es una ruta real (/coworking)
-  - route=false: es una sección del HOME (scroll)
+  ✅ Acá defino mis links:
+  - route=true: ruta real
+  - route=false: sección (scroll)
 */
 const navLinks = [
   { label: "Inicio", id: "inicio", route: false },
@@ -17,90 +17,66 @@ const navLinks = [
 ];
 
 const Header = () => {
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-
-  // ✅ Acá uso mi función para scrollear sin romper HashRouter (SIN href="#...")
   const { goToSection } = useScrollToSection();
 
   /*
-    ✅ Acá detecto el scroll para el efecto vidrio.
-    Si quiero que cambie antes o después, modifico el 50.
+    ✅ Acá dejo el header SIEMPRE con efecto vidrio azul.
+    No necesito cambiarlo con scroll porque vos lo querés igual siempre.
   */
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    // cierro el menú mobile cuando se hace scroll (detalle pro)
+    const onScroll = () => setOpen(false);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
     <header
-      /*
-        🔥 Acá controlo el efecto vidrio:
-        - backdrop-blur-xl = desenfoque tipo vidrio
-        - bg-white/10 = transparente arriba
-        - bg-primary/60 = más sólido al hacer scroll
-      */
-      className={`
+      className="
         fixed top-0 left-0 right-0 z-50
-        transition-all duration-300
         backdrop-blur-xl
+        bg-[#0B2A4A]/55
         border-b border-white/10
-        ${scrolled ? "bg-primary/60 shadow-lg" : "bg-white/10"}
-      `}
+      "
     >
       <div className="container mx-auto flex items-center justify-between px-6 py-4 lg:px-12">
-        {/* ✅ Acá muestro el logo a la izquierda y vuelvo al HOME */}
+        {/* ✅ Acá muestro el logo a la izquierda */}
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
           <img
             src={logoSalinas}
             alt="Estudio Jurídico Salinas"
-            /*
-              ✅ Acá puedo modificar el tamaño del logo del header.
-              Si lo quiero más grande: h-12
-              Si lo quiero más chico: h-8
-            */
-            className="h-10 w-auto"
+            /* ✅ Acá puedo agrandar o achicar el logo del header */
+            className="h-10 w-auto md:h-12"
             loading="eager"
           />
         </Link>
 
         {/* ✅ Menú desktop */}
-        <nav className="hidden md:flex gap-8">
-          {navLinks.map((link) => {
-            // ✅ Ruta real (coworking)
-            if (link.route) {
-              return (
-                <Link
-                  key={link.label}
-                  to={link.href!}
-                  className="font-body text-sm font-medium tracking-wider text-white/80 uppercase transition-colors hover:text-gold"
-                >
-                  {link.label}
-                </Link>
-              );
-            }
-
-            // ✅ Sección del HOME (scroll)
-            return (
-              <button
-                key={link.label}
-                type="button"
-                /*
-                  ✅ Importante: NO uso href="#..."
-                  Yo hago scroll con JS para no romper HashRouter (y evitar 404)
-                */
-                onClick={() => goToSection(link.id!)}
-                className="font-body text-sm font-medium tracking-wider text-white/80 uppercase transition-colors hover:text-gold"
+        <nav className="hidden gap-8 md:flex">
+          {navLinks.map((l) =>
+            l.route ? (
+              <Link
+                key={l.label}
+                to={l.href!}
+                className="font-body text-sm font-medium tracking-wider text-white/90 uppercase transition-colors hover:text-gold"
               >
-                {link.label}
+                {l.label}
+              </Link>
+            ) : (
+              <button
+                key={l.label}
+                type="button"
+                onClick={() => goToSection(l.id!)}
+                className="font-body text-sm font-medium tracking-wider text-white/90 uppercase transition-colors hover:text-gold"
+              >
+                {l.label}
               </button>
-            );
-          })}
+            )
+          )}
         </nav>
 
-        {/* ✅ Botón menú mobile */}
+        {/* ✅ Botón mobile */}
         <button
           className="text-white md:hidden"
           onClick={() => setOpen(!open)}
@@ -110,37 +86,33 @@ const Header = () => {
         </button>
       </div>
 
-      {/* ✅ Menú mobile desplegable */}
+      {/* ✅ Menú mobile */}
       {open && (
-        <nav className="md:hidden flex flex-col gap-4 px-6 pb-6 bg-primary/70 backdrop-blur-xl border-t border-white/10">
-          {navLinks.map((link) => {
-            if (link.route) {
-              return (
-                <Link
-                  key={link.label}
-                  to={link.href!}
-                  onClick={() => setOpen(false)}
-                  className="font-body text-sm font-medium tracking-wider text-white/80 uppercase transition-colors hover:text-gold text-left"
-                >
-                  {link.label}
-                </Link>
-              );
-            }
-
-            return (
+        <nav className="flex flex-col gap-4 px-6 pb-6 md:hidden bg-[#0B2A4A]/55 backdrop-blur-xl border-t border-white/10">
+          {navLinks.map((l) =>
+            l.route ? (
+              <Link
+                key={l.label}
+                to={l.href!}
+                onClick={() => setOpen(false)}
+                className="font-body text-sm font-medium tracking-wider text-white/90 uppercase transition-colors hover:text-gold text-left"
+              >
+                {l.label}
+              </Link>
+            ) : (
               <button
-                key={link.label}
+                key={l.label}
                 type="button"
                 onClick={() => {
                   setOpen(false);
-                  goToSection(link.id!);
+                  goToSection(l.id!);
                 }}
-                className="font-body text-sm font-medium tracking-wider text-white/80 uppercase transition-colors hover:text-gold text-left"
+                className="font-body text-sm font-medium tracking-wider text-white/90 uppercase transition-colors hover:text-gold text-left"
               >
-                {link.label}
+                {l.label}
               </button>
-            );
-          })}
+            )
+          )}
         </nav>
       )}
     </header>
